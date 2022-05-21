@@ -4,10 +4,22 @@ using UnityEngine;
 
 public class PointManager : MonoBehaviour
 {
+    private static PointManager instance;
+    public static PointManager Instance {
+        get{
+            if (instance == null)
+            {
+                instance = FindObjectOfType<PointManager>();
+            }
+            return instance;
+        }
+    }
     public List<MapSettings> settings;
     public PointPath pointPrefabs;
     public StackPath stackPrefabs;
     public GameObject goalPrefabs;
+    private PointPath startPoint;
+    private PointPath endPoint;
     private MapSettings curSettings;
     private List<PointPath> pointPath;
     private int curPoint = 0;
@@ -19,9 +31,12 @@ public class PointManager : MonoBehaviour
         level = DataManager.GetInt("level", 0);
         curSettings = settings[Mathf.Clamp(level, 0, settings.Count - 1)];
         pointPath = new List<PointPath>();
-        pointPath.Add(transform.GetChild(0).GetChild(0).GetComponent<PointPath>());
+        startPoint = transform.GetChild(0).GetChild(0).GetComponent<PointPath>();
+        startPoint.SetNextPoint(curSettings.pointsMap[1].position);
+        pointPath.Add(startPoint);
         Vector3 curRotation = Vector3.zero;
         int point = 0;
+        
         for (int i = 1; i < curSettings.pointsMap.Count; i++)
         {
             PointPath path = Instantiate(pointPrefabs, transform.GetChild(0));
@@ -47,10 +62,7 @@ public class PointManager : MonoBehaviour
                 stackPath.transform.localEulerAngles = curRotation;
                 stackPath.SetStatusPath(curSettings.pointsMap[i].isIncreaseStack, !curSettings.pointsMap[i].isIncreaseStack);
             }
-            if (i < curSettings.pointsMap.Count - 1)
-            {
-                path.SetNextPoint(curSettings.pointsMap[i + 1].position);
-            }
+            path.SetNextPoint(curSettings.pointsMap[Mathf.Clamp(i + 1,0, curSettings.pointsMap.Count - 1)].position);
             path.GetComponent<StackPath>().SetStatusPath(curSettings.pointsMap[i].isIncreaseStack, !curSettings.pointsMap[i].isIncreaseStack);
             pointPath.Add(path);
         }
@@ -63,5 +75,30 @@ public class PointManager : MonoBehaviour
         }
         GameObject goalObject = Instantiate(goalPrefabs, transform);
         goalObject.transform.localPosition = curSettings.pointsMap[curSettings.pointsMap.Count - 1].position + point * Vector3.forward;
+        endPoint = goalObject.transform.GetComponentInChildren<PointPath>();
+    }
+
+    public PointPath GetCurPoint(Vector3 direction)
+    {
+        Vector3 x;
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+        {
+            x = Vector3.right * direction.x;
+        }
+        else
+        {
+            x = Vector3.forward * direction.y;
+        }
+        int next = pointPath[curPoint].CheckDirection(x);
+        if (next != 0)
+        {
+            curPoint = Mathf.Clamp(curPoint + next, 0, pointPath.Count - 1);
+            return pointPath[curPoint];
+        }
+        return null;
+    }
+    public PointPath GetEndPoint()
+    {
+        return endPoint;
     }
 }

@@ -4,30 +4,42 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    public Transform player;
+    private static PlayerManager instance;
+    public static PlayerManager Instance { 
+        get {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<PlayerManager>();
+            }
+            return instance; } 
+    }
+
     public float speed = 5.0f;
     private bool touchStart = false;
     private Vector2 pointA;
     private Vector2 pointB;
-
-    public Transform circle;
-    public Transform outerCircle;
-    // Update is called once per frame
+    private bool isMoving = false;
+    private bool isEnd = false;
+    private Vector2 offset;
+    private Vector2 direction;
+    private PointPath pointToward;
+    private StackPlayer stackManager;
+    private ViewsPlayer viewsManager;
+    private void Awake()
+    {
+        stackManager = GetComponentInChildren<StackPlayer>();
+        viewsManager = GetComponentInChildren<ViewsPlayer>();
+    }
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            pointA = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.z));
-
-            circle.transform.position = pointA * -1;
-            outerCircle.transform.position = pointA * -1;
-            circle.GetComponent<SpriteRenderer>().enabled = true;
-            outerCircle.GetComponent<SpriteRenderer>().enabled = true;
+            pointA = Input.mousePosition;
         }
         if (Input.GetMouseButton(0))
         {
             touchStart = true;
-            pointB = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.z));
+            pointB = Input.mousePosition;
         }
         else
         {
@@ -37,19 +49,50 @@ public class PlayerManager : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (touchStart)
+        if (!isEnd && touchStart && !isMoving)
         {
-            Vector2 offset = pointB - pointA;
-            Vector2 direction = Vector2.ClampMagnitude(offset, 1.0f);
+            offset = pointB - pointA;
+            pointA = pointB;
+            pointToward = PointManager.Instance.GetCurPoint(offset);
+            if (pointToward != null)
+            {
+                isMoving = true;
+            }
             
-
-            circle.transform.position = new Vector2(pointA.x + direction.x, pointA.y + direction.y) * -1;
         }
-        else
+        if (isMoving)
         {
-            circle.GetComponent<SpriteRenderer>().enabled = false;
-            outerCircle.GetComponent<SpriteRenderer>().enabled = false;
+            var step = speed * Time.fixedDeltaTime; // calculate distance to move
+            transform.position = Vector3.MoveTowards(transform.position, pointToward.transform.position, step);
+            if(Vector3.Distance(transform.position, pointToward.transform.position) < 0.0001f)
+            {
+                if (pointToward.transform.position == pointToward.NextPoint)
+                {
+                    if (!isEnd)
+                    {
+                        pointToward = PointManager.Instance.GetEndPoint();
+                        isEnd = true;
+                    }
+                    else
+                    {
+                        GameManager.Instance.ActionEndGame();
+                        isMoving = false;
+                    }
+                }else if(pointToward.isContinuos && PointManager.Instance.GetCurPoint(pointToward.NextPoint - pointToward.transform.position) != null)
+                {
+                    pointToward = PointManager.Instance.GetCurPoint(pointToward.NextPoint - pointToward.transform.position);
+                }
+                else
+                {
+                    isMoving = false;
+                }
+            }
         }
+    }
 
+    public void SetHeight(int newHeight)
+    {
+        viewsManager.SetHeight(newHeight);
+        stackManager.SetHeight(newHeight);
     }
 }

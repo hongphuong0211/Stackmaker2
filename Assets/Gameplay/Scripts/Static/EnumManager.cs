@@ -10,4 +10,14 @@ public class EnumManager : MonoBehaviour
         Float,
         String
     }
+
+    public enum NumberUI
+    {
+        MainMenu,
+        Shop,
+        Settings,
+        GamePlay,
+        Pause,
+        Results
+    }
 }

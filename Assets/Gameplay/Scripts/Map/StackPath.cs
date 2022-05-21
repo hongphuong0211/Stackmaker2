@@ -4,8 +4,17 @@ using UnityEngine;
 
 public class StackPath : MonoBehaviour
 {
-    public bool hasStack = true;
-    public bool loseStack = false;
+    private bool hasStack;
+    private bool loseStack;
+    public bool HasStack {
+        get { return hasStack; }
+        private set { hasStack = value; }
+    }
+    public bool LoseStack
+    {
+        get { return loseStack; }
+        private set { loseStack = value; }
+    }
     public Material colorWhite;
     public Material colorYellow;
     private MeshRenderer colorPath;
@@ -15,12 +24,14 @@ public class StackPath : MonoBehaviour
     {
         stackObject = transform.GetChild(0).gameObject;
         colorPath = transform.GetChild(2).GetComponent<MeshRenderer>();
+        hasStack = true;
+        loseStack = false;
     }
 
     public void SetStatusPath(bool newStatusHave, bool newStatusLose = false)
     {
-        hasStack = newStatusHave;
-        loseStack = newStatusLose;
+        HasStack = newStatusHave;
+        LoseStack = newStatusLose;
         if (loseStack)
         {
             stackObject.SetActive(false);
@@ -43,6 +54,21 @@ public class StackPath : MonoBehaviour
             else
             {
                 stackObject.SetActive(true);
+            }
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            if (loseStack && !hasStack)
+            {
+                GameManager.Instance.CountStack--;
+                SetStatusPath(true, true);
+            }else if(!loseStack && hasStack)
+            {
+                GameManager.Instance.CountStack++;
+                SetStatusPath(false, false);
             }
         }
     }

@@ -8,6 +8,8 @@ public class PointPath : MonoBehaviour
     public bool isContinuos = false;
     private Vector3 prevPoint = Vector3.zero;
     private Vector3 nextPoint = Vector3.zero;
+
+    public Vector3 NextPoint { get { return nextPoint; } }
     public void SetPrevPoint(Vector3 newPos)
     {
         prevPoint = newPos;
@@ -20,10 +22,10 @@ public class PointPath : MonoBehaviour
 
     public int CheckDirection(Vector3 dirMove)
     {
-        if(dirMove.normalized == (transform.position - prevPoint).normalized)
+        if(dirMove.normalized == (prevPoint - transform.position).normalized)
         {
             return -1;
-        }else if (dirMove.normalized == (transform.position - nextPoint).normalized)
+        }else if (dirMove.normalized == (nextPoint - transform.position).normalized)
         {
             return 1;
         }

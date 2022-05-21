@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 4463150112738913}
   - component: {fileID: 774893419101973265}
   - component: {fileID: 4312808889739238191}
+  - component: {fileID: 1117737131583945391}
   m_Layer: 0
   m_Name: Path
-  m_TagString: Untagged
+  m_TagString: Stack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60,10 +61,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e72d3ab920a51ec4fa6c7ccccea5c977, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasStack: 1
-  loseStack: 0
   colorWhite: {fileID: 2100000, guid: 6007c1c332562174ea4ac7d4b4d129ed, type: 2}
   colorYellow: {fileID: 2100000, guid: 72750a44db1d47d49b419c1447ff14e1, type: 2}
+--- !u!65 &1117737131583945391
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377948116806254}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.95, y: 1, z: 0.95}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &2828665051831975438
 GameObject:
   m_ObjectHideFlags: 0
