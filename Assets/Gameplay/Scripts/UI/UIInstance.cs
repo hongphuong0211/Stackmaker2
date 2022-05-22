@@ -10,11 +10,17 @@ public class UIInstance : MonoBehaviour
     }
     protected virtual void OnEnable()
     {
-        UIManager.Instance.OpenUI(otherNumberUI);
+        if (otherNumberUI != numberUI)
+        {
+            UIManager.Instance.OpenUI(otherNumberUI);
+        }
     }
     protected virtual void OnDisable()
     {
-        UIManager.Instance.CloseUI(otherNumberUI);
+        if (otherNumberUI != numberUI)
+        {
+            UIManager.Instance.CloseUI(otherNumberUI);
+        }
     }
     
 

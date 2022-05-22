@@ -17,6 +17,24 @@ public class UIManager : MonoBehaviour
     public List<UIInstance> uiPrefabs;
     private List<UIInstance> uiInstances;
 
+    private void Awake()
+    {
+        GameManager.Instance.ActionStartGame += () =>
+        {
+            CloseUI(EnumManager.NumberUI.MainMenu);
+            OpenUI(EnumManager.NumberUI.GamePlay);
+        };
+        GameManager.Instance.ActionEndGame += () => {
+            CloseUI(EnumManager.NumberUI.GamePlay);
+            OpenUI(EnumManager.NumberUI.Results);
+        };
+    }
+    private void Start()
+    {
+        uiInstances = new List<UIInstance>();
+        OpenUI(0);
+    }
+
     public void OpenUI(int numberUI)
     {
         if (IsActive(numberUI)) return;
@@ -25,7 +43,10 @@ public class UIManager : MonoBehaviour
             if ((int)uiInstances[i].numberUI == numberUI)
             {
                 uiInstances[i].gameObject.SetActive(true);
-                return;
+                if((int)uiInstances[i].otherNumberUI != numberUI)
+                {
+                    OpenUI(uiInstances[i].otherNumberUI);
+                }
             }
         }
         for(int i = 0; i < uiPrefabs.Count; i++)
@@ -33,8 +54,8 @@ public class UIManager : MonoBehaviour
             if((int)uiPrefabs[i].numberUI == numberUI)
             {
                 UIInstance ins = Instantiate(uiPrefabs[i], transform);
-                ins.gameObject.SetActive(true);
                 uiInstances.Add(ins);
+                OpenUI(numberUI);
                 return;
             }
         }
@@ -53,6 +74,10 @@ public class UIManager : MonoBehaviour
                 if ((int)uiInstances[i].numberUI == numberUI)
                 {
                     uiInstances[i].gameObject.SetActive(false);
+                    if ((int)uiInstances[i].otherNumberUI != numberUI)
+                    {
+                        CloseUI(uiInstances[i].otherNumberUI);
+                    }
                     return;
                 }
             }

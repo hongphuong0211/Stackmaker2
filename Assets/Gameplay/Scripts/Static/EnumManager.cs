@@ -6,9 +6,8 @@ public class EnumManager : MonoBehaviour
 {
     public enum DataType
     {
-        Integer,
-        Float,
-        String
+        level,
+
     }
 
     public enum NumberUI

@@ -29,10 +29,14 @@ public class GameManager : MonoBehaviour
             PlayerManager.Instance.SetHeight(value);
         }
     }
-
+    //private void Awake()
+    //{
+    //    DontDestroyOnLoad(Instance);
+    //}
     private void Start()
     {
         ActionStartGame += ()=>{ endGame = false; };
         ActionEndGame += ()=>{ endGame = true; };
     }
+
 }

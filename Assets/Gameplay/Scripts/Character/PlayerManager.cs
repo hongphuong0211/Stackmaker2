@@ -16,6 +16,7 @@ public class PlayerManager : MonoBehaviour
 
     public float speed = 5.0f;
     private bool touchStart = false;
+    private bool startGame = false;
     private Vector2 pointA;
     private Vector2 pointB;
     private bool isMoving = false;
@@ -38,6 +39,11 @@ public class PlayerManager : MonoBehaviour
         }
         if (Input.GetMouseButton(0))
         {
+            if (!startGame)
+            {
+                startGame = true;
+                GameManager.Instance.ActionStartGame.Invoke();
+            }
             touchStart = true;
             pointB = Input.mousePosition;
         }
@@ -75,7 +81,8 @@ public class PlayerManager : MonoBehaviour
                     }
                     else
                     {
-                        GameManager.Instance.ActionEndGame();
+                        print("ENd Game");
+                        GameManager.Instance.ActionEndGame.Invoke();
                         isMoving = false;
                     }
                 }else if(pointToward.isContinuos && PointManager.Instance.GetCurPoint(pointToward.NextPoint - pointToward.transform.position) != null)

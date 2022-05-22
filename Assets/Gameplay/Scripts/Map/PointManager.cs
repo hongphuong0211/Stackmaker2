@@ -28,7 +28,7 @@ public class PointManager : MonoBehaviour
     private void Awake()
     {
         curPoint = 0;
-        level = DataManager.GetInt("level", 0);
+        level = DataManager.GetLevel();
         curSettings = settings[Mathf.Clamp(level, 0, settings.Count - 1)];
         pointPath = new List<PointPath>();
         startPoint = transform.GetChild(0).GetChild(0).GetComponent<PointPath>();
@@ -76,6 +76,7 @@ public class PointManager : MonoBehaviour
         GameObject goalObject = Instantiate(goalPrefabs, transform);
         goalObject.transform.localPosition = curSettings.pointsMap[curSettings.pointsMap.Count - 1].position + point * Vector3.forward;
         endPoint = goalObject.transform.GetComponentInChildren<PointPath>();
+        endPoint.SetNextPoint(endPoint.transform.position);
     }
 
     public PointPath GetCurPoint(Vector3 direction)
